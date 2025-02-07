@@ -142,45 +142,42 @@ function executeContentScript() {
 }
 
 function applyAnswers(data, parsedData) {
-    if (!data?.result || !parsedData?.length) {
-      console.error("Invalid input data:", { data, parsedData });
-      return;
-    }
-  
-    parsedData.forEach((question, index) => {
-      const response = data.result.find(
-        (r) =>
-          r?.fullQuestion?.trim().replace(/\s+/g, " ") ===
-          question.text.trim().replace(/\s+/g, " ")
-      );
-  
-      if (!response) return console.warn(`No match found for question ${index + 1}`);
-  
-      const answerTexts = Array.isArray(response.answer)
-        ? response.answer.map((a) => a.trim())
-        : [response.answer.trim()];
-  
-      answerTexts.forEach((answerText) => {
-        const matchingOption = Array.from(document.querySelectorAll("label span")).find(
-          (span) => span.textContent.trim() === answerText
-        );
-  
-        if (matchingOption && !matchingOption.textContent.includes(".")) {
-          // Crear el signo "+" con estilo blanco
-          const plusSpan = document.createElement("span");
-          plusSpan.textContent = " .";
-          plusSpan.style.color = "white"; // Asignar estilo de color blanco
-  
-          // Agregar el signo "+" al texto existente
-          matchingOption.appendChild(plusSpan);
-          console.log(`Marked correct answer: "${answerText}"`);
-        }
-      });
-    });
-  
-    console.log("applyAnswers completed");
+  if (!data?.result || !parsedData?.length) {
+    console.error("Invalid input data:", { data, parsedData });
+    return;
   }
 
+  parsedData.forEach((question, index) => {
+    const response = data.result.find(
+      (r) =>
+        r?.fullQuestion?.trim().replace(/\s+/g, " ") ===
+        question.text.trim().replace(/\s+/g, " ")
+    );
+
+    if (!response) return console.warn(`No match found for question ${index + 1}`);
+
+    const answerTexts = Array.isArray(response.answer)
+      ? response.answer.map((a) => a.trim().replace(/^'|'$/g, "")) 
+      : [response.answer.trim().replace(/^'|'$/g, "")]; 
+
+    answerTexts.forEach((answerText) => {
+      const matchingOption = Array.from(document.querySelectorAll("label span")).find(
+        (span) => span.textContent.trim() === answerText
+      );
+
+      if (matchingOption && !matchingOption.textContent.includes(".")) {
+        const plusSpan = document.createElement("span");
+        plusSpan.textContent = " .";
+        plusSpan.style.color = "white"; 
+
+        matchingOption.appendChild(plusSpan);
+        console.log(`Marked correct answer: "${answerText}"`);
+      }
+    });
+  });
+
+  console.log("applyAnswers completed");
+}
 document.addEventListener("keydown", function (event) {
   if (event.ctrlKey && event.key === "c") {
     executeContentScript(); // Ejecutar el script con Ctrl+C
