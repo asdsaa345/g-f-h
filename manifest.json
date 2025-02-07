@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Fijas",
+  "name": "La Fijas",
   "version": "1.0",
   "description": "Extensión para  las fijas.",
   "permissions": ["activeTab", "scripting", "storage"],
@@ -9,7 +9,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Fijas"
+    "default_title": "Las fijas"
   },
   "content_scripts": [
     {
