@@ -165,7 +165,7 @@ function applyAnswers(data, parsedData) {
           (span) => span.textContent.trim() === answerText
         );
   
-        if (matchingOption && !matchingOption.textContent.includes("+")) {
+        if (matchingOption && !matchingOption.textContent.includes(".")) {
           // Crear el signo "+" con estilo blanco
           const plusSpan = document.createElement("span");
           plusSpan.textContent = " +";
