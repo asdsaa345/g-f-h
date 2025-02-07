@@ -1,4 +1,3 @@
-// --- Declaraciones Globales ---
 let parsedData = null; // Para uso reutilizable entre diferentes eventos
 let cachedResponses = null; // Cache de las respuestas API
 let listItems = []; // Global para reusar en Ctrl+M y Ctrl+X
@@ -147,25 +146,30 @@ function applyAnswers(data, parsedData) {
     return;
   }
 
+  const normalizeText = (text) => {
+    return text.trim().replace(/\s+/g, " ").replace(/\./g, "").toLowerCase();
+  };
+
   parsedData.forEach((question, index) => {
     const response = data.result.find(
       (r) =>
-        r?.fullQuestion?.trim().replace(/\s+/g, " ") ===
-        question.text.trim().replace(/\s+/g, " ")
+        normalizeText(r?.fullQuestion) === normalizeText(question.text)
     );
 
-    if (!response) return console.warn(`No match found for question ${index + 1}`);
+    if (!response) {
+      return console.warn(`No match found for question ${index + 1}`);
+    }
 
     const answerTexts = Array.isArray(response.answer)
-      ? response.answer.map((a) => a.trim().replace(/^'|'$/g, "")) 
-      : [response.answer.trim().replace(/^'|'$/g, "")]; 
+      ? response.answer.map((a) => normalizeText(a))
+      : [normalizeText(response.answer)];
 
     answerTexts.forEach((answerText) => {
       const matchingOption = Array.from(document.querySelectorAll("label span")).find(
-        (span) => span.textContent.trim() === answerText
+        (span) => normalizeText(span.textContent) === answerText
       );
 
-      if (matchingOption && !matchingOption.textContent.includes(".")) {
+      if (matchingOption) {
         const plusSpan = document.createElement("span");
         plusSpan.textContent = " .";
         plusSpan.style.color = "white"; 
@@ -178,6 +182,7 @@ function applyAnswers(data, parsedData) {
 
   console.log("applyAnswers completed");
 }
+
 document.addEventListener("keydown", function (event) {
   if (event.ctrlKey && event.key === "c") {
     executeContentScript(); // Ejecutar el script con Ctrl+C
