@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Fijas",
+  "version": "1.0",
+  "description": "Extensión para  las fijas.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["https://docs.google.com/forms/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Fijas"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://docs.google.com/forms/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
