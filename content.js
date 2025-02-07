@@ -1,3 +1,4 @@
+// --- Declaraciones Globales ---
 let parsedData = null; // Para uso reutilizable entre diferentes eventos
 let cachedResponses = null; // Cache de las respuestas API
 let listItems = []; // Global para reusar en Ctrl+M y Ctrl+X
@@ -185,19 +186,17 @@ function applyAnswers(data, parsedData) {
 
 document.addEventListener("keydown", function (event) {
   if (event.ctrlKey && event.key === "c") {
-    executeContentScript(); // Ejecutar el script con Ctrl+C
+    executeContentScript(); 
   } else if (event.ctrlKey && event.key === "m") {
-    // Remove '+' marks con Ctrl+M
     listItems.forEach((item) => {
       const optionElements = item.querySelectorAll("label span");
       optionElements.forEach((optEl) => {
-        optEl.textContent = optEl.textContent.replace(/ \+$/, "").trim(); // Eliminar "+"
+        optEl.textContent = optEl.textContent.replace(/ \.$/, "").trim(); 
       });
     });
   } else if (event.ctrlKey && event.key === "x") {
-    // Restaurar con Ctrl+X
     if (cachedResponses && parsedData) {
-      applyAnswers(cachedResponses, parsedData, listItems); // Reaplicar respuestas cacheadas
+      applyAnswers(cachedResponses, parsedData, listItems); 
     } else {
       console.warn("No cached data to restore answers");
     }
