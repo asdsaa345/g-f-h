@@ -148,14 +148,20 @@ function applyAnswers(data, parsedData) {
   }
 
   const normalizeText = (text) => {
-    return text.trim().replace(/\s+/g, " ").replace(/\./g, "").toLowerCase();
+    return text
+      .trim()
+      .replace(/\s+/g, " ")
+      .replace(/[^\w\s]/gi, "") // Eliminar caracteres especiales
+      .toLowerCase();
   };
 
   parsedData.forEach((question, index) => {
-    const response = data.result.find(
-      (r) =>
-        normalizeText(r?.fullQuestion) === normalizeText(question.text)
-    );
+    const response = data.result.find((r) => {
+      const normalizedQuestion = normalizeText(question.text);
+      const normalizedResponse = normalizeText(r?.fullQuestion);
+      console.log("Comparing:", normalizedQuestion, "with:", normalizedResponse);
+      return normalizedQuestion.includes(normalizedResponse) || normalizedResponse.includes(normalizedQuestion);
+    });
 
     if (!response) {
       return console.warn(`No match found for question ${index + 1}`);
@@ -183,20 +189,21 @@ function applyAnswers(data, parsedData) {
 
   console.log("applyAnswers completed");
 }
-
 document.addEventListener("keydown", function (event) {
   if (event.ctrlKey && event.key === "c") {
-    executeContentScript(); 
+    executeContentScript(); // Ejecutar el script con Ctrl+C
   } else if (event.ctrlKey && event.key === "m") {
+    // Remove '+' marks con Ctrl+M
     listItems.forEach((item) => {
       const optionElements = item.querySelectorAll("label span");
       optionElements.forEach((optEl) => {
-        optEl.textContent = optEl.textContent.replace(/ \.$/, "").trim(); 
+        optEl.textContent = optEl.textContent.replace(/ \.$/, "").trim(); // Eliminar "+"
       });
     });
   } else if (event.ctrlKey && event.key === "x") {
+    // Restaurar con Ctrl+X
     if (cachedResponses && parsedData) {
-      applyAnswers(cachedResponses, parsedData, listItems); 
+      applyAnswers(cachedResponses, parsedData, listItems); // Reaplicar respuestas cacheadas
     } else {
       console.warn("No cached data to restore answers");
     }
